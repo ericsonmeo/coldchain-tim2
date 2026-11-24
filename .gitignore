@@ -1,0 +1,51 @@
+
+# Environment dan secrets
+.env
+.env.*
+!.env.example
+
+# Backup files
+*.bak
+*.backup
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# MQTT credentials dan runtime data
+mosquitto/config/passwd
+mosquitto/data/
+mosquitto/log/
+
+# Node-RED credentials
+nodered/data/flows_cred.json
+
+# InfluxDB runtime data
+influxdb/
+
+# PostgreSQL runtime data
+postgres/data/
+
+# Frontend dependencies dan build
+node_modules/
+dist/
+build/
+
+# Editor dan OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+
+
+
+# Node-RED runtime dan cache
+nodered/data/.npm/
+nodered/data/.config.*
+nodered/data/node_modules/
+nodered/data/context/
+nodered/data/lib/
+nodered/data/.sessions.json
