@@ -15,6 +15,8 @@ services:
     image: nodered/node-red:latest
     container_name: coldchain-nodered
     restart: unless-stopped
+    environment:
+      API_KEY: ${API_KEY}
     ports:
       - "1880:1880"
     volumes:
@@ -37,3 +39,50 @@ services:
       DOCKER_INFLUXDB_INIT_ORG: ${INFLUXDB_ORG}
       DOCKER_INFLUXDB_INIT_BUCKET: ${INFLUXDB_BUCKET}
       DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUXDB_ADMIN_TOKEN}
+
+  postgres:
+    image: postgres:16
+    container_name: coldchain-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: kampus
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d
+
+  backend:
+    build: ./backend
+    container_name: coldchain-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      API_KEY: ${API_KEY}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: kampus
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      INFLUXDB_URL: http://influxdb:8086
+      INFLUXDB_ORG: ${INFLUXDB_ORG}
+      INFLUXDB_BUCKET: ${INFLUXDB_BUCKET}
+      INFLUXDB_ADMIN_TOKEN: ${INFLUXDB_ADMIN_TOKEN}
+    depends_on:
+      - postgres
+      - influxdb
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: coldchain-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/data:/var/lib/grafana
+    depends_on:
+      - influxdb
+
